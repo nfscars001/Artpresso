@@ -1,19 +1,19 @@
 import './styles/global.css';
 import './styles/app.css';
 import {
-    type ArtworkDetails,
-    type Currency,
-    type PriceCalculation,
-    CAREER_STAGE_LABELS,
-    EDUCATION_LABELS,
-    SALES_RANGE_LABELS,
-    MEDIUM_LABELS
+  type ArtworkDetails,
+  type Currency,
+  type PriceCalculation,
+  CAREER_STAGE_LABELS,
+  EDUCATION_LABELS,
+  SALES_RANGE_LABELS,
+  MEDIUM_LABELS
 } from './types/artwork';
 import {
-    calculatePrice,
-    formatCurrency,
-    formatPriceRange,
-    fetchExchangeRate
+  calculatePrice,
+  formatCurrency,
+  formatPriceRange,
+  fetchExchangeRate
 } from './utils/priceCalculator';
 import { generatePDF } from './utils/pdfExport';
 
@@ -26,20 +26,20 @@ let artworkImageDataUrl: string | null = null;
 
 // ===== Initialize =====
 async function init() {
-    renderApp();
-    setupEventListeners();
+  renderApp();
+  setupEventListeners();
 
-    // Fetch exchange rate
-    const rateData = await fetchExchangeRate();
-    exchangeRate = rateData.rate;
-    exchangeRateDate = rateData.date;
-    updateExchangeRateDisplay();
+  // Fetch exchange rate
+  const rateData = await fetchExchangeRate();
+  exchangeRate = rateData.rate;
+  exchangeRateDate = rateData.date;
+  updateExchangeRateDisplay();
 }
 
 function renderApp() {
-    const app = document.getElementById('app')!;
+  const app = document.getElementById('app')!;
 
-    app.innerHTML = `
+  app.innerHTML = `
     <div class="app">
       <header class="header">
         <div class="container">
@@ -48,7 +48,7 @@ function renderApp() {
               <span class="logo-icon">☕</span>
               <span class="logo-text">Artpresso</span>
             </div>
-            <p class="tagline">Professional Artwork Pricing Calculator</p>
+            <p class="tagline">Brew a price. Serve it confidently.</p>
           </div>
         </div>
       </header>
@@ -115,8 +115,8 @@ function renderApp() {
                       <label for="careerStage">Career Stage</label>
                       <select id="careerStage" required>
                         ${Object.entries(CAREER_STAGE_LABELS).map(([value, label]) =>
-        `<option value="${value}">${label}</option>`
-    ).join('')}
+    `<option value="${value}">${label}</option>`
+  ).join('')}
                       </select>
                     </div>
                     
@@ -124,8 +124,8 @@ function renderApp() {
                       <label for="education">Education / Experience</label>
                       <select id="education" required>
                         ${Object.entries(EDUCATION_LABELS).map(([value, label]) =>
-        `<option value="${value}">${label}</option>`
-    ).join('')}
+    `<option value="${value}">${label}</option>`
+  ).join('')}
                       </select>
                     </div>
                     
@@ -133,8 +133,8 @@ function renderApp() {
                       <label for="salesRange">Annual Sales</label>
                       <select id="salesRange" required>
                         ${Object.entries(SALES_RANGE_LABELS).map(([value, label]) =>
-        `<option value="${value}">${label}</option>`
-    ).join('')}
+    `<option value="${value}">${label}</option>`
+  ).join('')}
                       </select>
                     </div>
                   </div>
@@ -147,8 +147,8 @@ function renderApp() {
                       <label for="medium">Medium</label>
                       <select id="medium" required>
                         ${Object.entries(MEDIUM_LABELS).map(([value, label]) =>
-        `<option value="${value}">${label}</option>`
-    ).join('')}
+    `<option value="${value}">${label}</option>`
+  ).join('')}
                       </select>
                     </div>
                     
@@ -218,7 +218,7 @@ function renderApp() {
 
       <footer class="footer">
         <div class="container">
-          <p>© ${new Date().getFullYear()} Artpresso • Pricing calculator for professional artists</p>
+          <p>© 2026 Westside Union Crop. All Rights Reserved. - Artpresso</p>
         </div>
       </footer>
     </div>
@@ -226,130 +226,130 @@ function renderApp() {
 }
 
 function setupEventListeners() {
-    // Form submission
-    const form = document.getElementById('artworkForm') as HTMLFormElement;
-    form.addEventListener('submit', handleCalculate);
+  // Form submission
+  const form = document.getElementById('artworkForm') as HTMLFormElement;
+  form.addEventListener('submit', handleCalculate);
 
-    // Currency toggle
-    const toggleButtons = document.querySelectorAll('.toggle-btn');
-    toggleButtons.forEach(btn => {
-        btn.addEventListener('click', () => handleCurrencyChange(btn as HTMLElement));
-    });
+  // Currency toggle
+  const toggleButtons = document.querySelectorAll('.toggle-btn');
+  toggleButtons.forEach(btn => {
+    btn.addEventListener('click', () => handleCurrencyChange(btn as HTMLElement));
+  });
 
-    // Image upload
-    const imageInput = document.getElementById('artworkImage') as HTMLInputElement;
-    imageInput.addEventListener('change', handleImageUpload);
+  // Image upload
+  const imageInput = document.getElementById('artworkImage') as HTMLInputElement;
+  imageInput.addEventListener('change', handleImageUpload);
 }
 
 function handleCurrencyChange(btn: HTMLElement) {
-    const currency = btn.dataset.currency as Currency;
-    currentCurrency = currency;
+  const currency = btn.dataset.currency as Currency;
+  currentCurrency = currency;
 
-    // Update toggle UI
-    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+  // Update toggle UI
+  document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
 
-    // Recalculate if we have a result
-    if (currentCalculation) {
-        const formData = getFormData();
-        if (formData) {
-            currentCalculation = calculatePrice(formData, currentCurrency, exchangeRate);
-            renderQuote(currentCalculation, formData);
-        }
+  // Recalculate if we have a result
+  if (currentCalculation) {
+    const formData = getFormData();
+    if (formData) {
+      currentCalculation = calculatePrice(formData, currentCurrency, exchangeRate);
+      renderQuote(currentCalculation, formData);
     }
+  }
 }
 
 function handleImageUpload(e: Event) {
-    const input = e.target as HTMLInputElement;
-    const file = input.files?.[0];
+  const input = e.target as HTMLInputElement;
+  const file = input.files?.[0];
 
-    if (!file) return;
+  if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-        alert('Image size must be under 5MB');
-        return;
-    }
+  if (file.size > 5 * 1024 * 1024) {
+    alert('Image size must be under 5MB');
+    return;
+  }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        artworkImageDataUrl = event.target?.result as string;
-        const preview = document.getElementById('imagePreview')!;
-        preview.innerHTML = `
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    artworkImageDataUrl = event.target?.result as string;
+    const preview = document.getElementById('imagePreview')!;
+    preview.innerHTML = `
       <img src="${artworkImageDataUrl}" alt="Artwork preview">
       <button type="button" class="remove-image" id="removeImage">×</button>
     `;
-        preview.classList.add('has-image');
-        document.getElementById('imageUpload')!.classList.add('has-image');
+    preview.classList.add('has-image');
+    document.getElementById('imageUpload')!.classList.add('has-image');
 
-        // Add remove handler
-        document.getElementById('removeImage')!.addEventListener('click', () => {
-            artworkImageDataUrl = null;
-            preview.innerHTML = '';
-            preview.classList.remove('has-image');
-            document.getElementById('imageUpload')!.classList.remove('has-image');
-            input.value = '';
-        });
-    };
-    reader.readAsDataURL(file);
+    // Add remove handler
+    document.getElementById('removeImage')!.addEventListener('click', () => {
+      artworkImageDataUrl = null;
+      preview.innerHTML = '';
+      preview.classList.remove('has-image');
+      document.getElementById('imageUpload')!.classList.remove('has-image');
+      input.value = '';
+    });
+  };
+  reader.readAsDataURL(file);
 }
 
 function getFormData(): ArtworkDetails | null {
-    const title = (document.getElementById('title') as HTMLInputElement).value.trim();
-    const artistName = (document.getElementById('artistName') as HTMLInputElement).value.trim();
-    const width = parseFloat((document.getElementById('width') as HTMLInputElement).value);
-    const height = parseFloat((document.getElementById('height') as HTMLInputElement).value);
-    const depth = parseFloat((document.getElementById('depth') as HTMLInputElement).value) || undefined;
-    const unit = (document.getElementById('unit') as HTMLSelectElement).value as 'inches' | 'cm';
-    const careerStage = (document.getElementById('careerStage') as HTMLSelectElement).value as ArtworkDetails['careerStage'];
-    const education = (document.getElementById('education') as HTMLSelectElement).value as ArtworkDetails['education'];
-    const salesRange = (document.getElementById('salesRange') as HTMLSelectElement).value as ArtworkDetails['salesRange'];
-    const medium = (document.getElementById('medium') as HTMLSelectElement).value as ArtworkDetails['medium'];
-    const materialCost = parseFloat((document.getElementById('materialCost') as HTMLInputElement).value) || 0;
-    const framingCost = parseFloat((document.getElementById('framingCost') as HTMLInputElement).value) || 0;
+  const title = (document.getElementById('title') as HTMLInputElement).value.trim();
+  const artistName = (document.getElementById('artistName') as HTMLInputElement).value.trim();
+  const width = parseFloat((document.getElementById('width') as HTMLInputElement).value);
+  const height = parseFloat((document.getElementById('height') as HTMLInputElement).value);
+  const depth = parseFloat((document.getElementById('depth') as HTMLInputElement).value) || undefined;
+  const unit = (document.getElementById('unit') as HTMLSelectElement).value as 'inches' | 'cm';
+  const careerStage = (document.getElementById('careerStage') as HTMLSelectElement).value as ArtworkDetails['careerStage'];
+  const education = (document.getElementById('education') as HTMLSelectElement).value as ArtworkDetails['education'];
+  const salesRange = (document.getElementById('salesRange') as HTMLSelectElement).value as ArtworkDetails['salesRange'];
+  const medium = (document.getElementById('medium') as HTMLSelectElement).value as ArtworkDetails['medium'];
+  const materialCost = parseFloat((document.getElementById('materialCost') as HTMLInputElement).value) || 0;
+  const framingCost = parseFloat((document.getElementById('framingCost') as HTMLInputElement).value) || 0;
 
-    if (!title || !artistName || isNaN(width) || isNaN(height) || width <= 0 || height <= 0) {
-        return null;
-    }
+  if (!title || !artistName || isNaN(width) || isNaN(height) || width <= 0 || height <= 0) {
+    return null;
+  }
 
-    return {
-        title,
-        artistName,
-        dimensions: { width, height, depth, unit },
-        careerStage,
-        education,
-        salesRange,
-        medium,
-        materialCost,
-        framingCost,
-        imageDataUrl: artworkImageDataUrl || undefined
-    };
+  return {
+    title,
+    artistName,
+    dimensions: { width, height, depth, unit },
+    careerStage,
+    education,
+    salesRange,
+    medium,
+    materialCost,
+    framingCost,
+    imageDataUrl: artworkImageDataUrl || undefined
+  };
 }
 
 function handleCalculate(e: Event) {
-    e.preventDefault();
+  e.preventDefault();
 
-    const formData = getFormData();
-    if (!formData) {
-        alert('Please fill in all required fields');
-        return;
-    }
+  const formData = getFormData();
+  if (!formData) {
+    alert('Please fill in all required fields');
+    return;
+  }
 
-    currentCalculation = calculatePrice(formData, currentCurrency, exchangeRate);
-    renderQuote(currentCalculation, formData);
+  currentCalculation = calculatePrice(formData, currentCurrency, exchangeRate);
+  renderQuote(currentCalculation, formData);
 }
 
 function renderQuote(calc: PriceCalculation, artwork: ArtworkDetails) {
-    const placeholder = document.getElementById('quotePlaceholder')!;
-    const content = document.getElementById('quoteContent')!;
+  const placeholder = document.getElementById('quotePlaceholder')!;
+  const content = document.getElementById('quoteContent')!;
 
-    placeholder.classList.add('hidden');
-    content.classList.remove('hidden');
+  placeholder.classList.add('hidden');
+  content.classList.remove('hidden');
 
-    const dimensionStr = artwork.dimensions.depth
-        ? `${artwork.dimensions.width} × ${artwork.dimensions.height} × ${artwork.dimensions.depth} ${artwork.dimensions.unit}`
-        : `${artwork.dimensions.width} × ${artwork.dimensions.height} ${artwork.dimensions.unit}`;
+  const dimensionStr = artwork.dimensions.depth
+    ? `${artwork.dimensions.width} × ${artwork.dimensions.height} × ${artwork.dimensions.depth} ${artwork.dimensions.unit}`
+    : `${artwork.dimensions.width} × ${artwork.dimensions.height} ${artwork.dimensions.unit}`;
 
-    content.innerHTML = `
+  content.innerHTML = `
     <div class="quote-header">
       <h2 class="quote-title">Price Quote</h2>
       <p class="quote-date">${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
@@ -453,31 +453,31 @@ function renderQuote(calc: PriceCalculation, artwork: ArtworkDetails) {
     </div>
   `;
 
-    // Add event listeners
-    document.getElementById('detailsToggle')!.addEventListener('click', () => {
-        const detailsContent = document.getElementById('detailsContent')!;
-        const arrow = document.querySelector('.toggle-arrow')!;
-        detailsContent.classList.toggle('hidden');
-        arrow.textContent = detailsContent.classList.contains('hidden') ? '▼' : '▲';
-    });
+  // Add event listeners
+  document.getElementById('detailsToggle')!.addEventListener('click', () => {
+    const detailsContent = document.getElementById('detailsContent')!;
+    const arrow = document.querySelector('.toggle-arrow')!;
+    detailsContent.classList.toggle('hidden');
+    arrow.textContent = detailsContent.classList.contains('hidden') ? '▼' : '▲';
+  });
 
-    document.getElementById('exportPdfBtn')!.addEventListener('click', () => {
-        generatePDF(artwork, calc);
-    });
+  document.getElementById('exportPdfBtn')!.addEventListener('click', () => {
+    generatePDF(artwork, calc);
+  });
 
-    // Scroll to quote on mobile
-    if (window.innerWidth < 1024) {
-        content.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+  // Scroll to quote on mobile
+  if (window.innerWidth < 1024) {
+    content.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 function updateExchangeRateDisplay() {
-    const el = document.getElementById('exchangeRate');
-    if (el && exchangeRateDate) {
-        el.textContent = exchangeRateDate === 'fallback'
-            ? `(1 USD = ${exchangeRate.toFixed(2)} CAD, fallback rate)`
-            : `(1 USD = ${exchangeRate.toFixed(2)} CAD)`;
-    }
+  const el = document.getElementById('exchangeRate');
+  if (el && exchangeRateDate) {
+    el.textContent = exchangeRateDate === 'fallback'
+      ? `(1 USD = ${exchangeRate.toFixed(2)} CAD, fallback rate)`
+      : `(1 USD = ${exchangeRate.toFixed(2)} CAD)`;
+  }
 }
 
 // Start app

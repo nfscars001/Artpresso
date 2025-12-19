@@ -147,8 +147,8 @@
 
 .image-preview img {
     width: 100%;
-    max-height: 200px;
-    object-fit: cover;
+    height: auto;
+    object-fit: contain;
     border-radius: var(--radius-lg);
 }
 
@@ -285,8 +285,8 @@
 
 .quote-image img {
     width: 100%;
-    max-height: 250px;
-    object-fit: cover;
+    height: auto;
+    object-fit: contain;
 }
 
 /* ===== Quote Artwork Info ===== */
