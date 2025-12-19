@@ -112,7 +112,8 @@ export async function generatePDF(artwork: ArtworkDetails, calc: PriceCalculatio
     pdf.setTextColor(...COLORS.white);
     pdf.setFont('helvetica', 'bolditalic');
     pdf.setFontSize(18); // Smaller font
-    pdf.text(`"${artwork.title}"`, pageWidth / 2, y, { align: 'center' });
+    const titleText = artwork.year ? `"${artwork.title}", ${artwork.year}` : `"${artwork.title}"`;
+    pdf.text(titleText, pageWidth / 2, y, { align: 'center' });
     y += 7;
 
     pdf.setFont('helvetica', 'normal');
@@ -124,8 +125,9 @@ export async function generatePDF(artwork: ArtworkDetails, calc: PriceCalculatio
     const dimensionStr = artwork.dimensions.depth
         ? `${artwork.dimensions.width} × ${artwork.dimensions.height} × ${artwork.dimensions.depth} ${artwork.dimensions.unit}`
         : `${artwork.dimensions.width} × ${artwork.dimensions.height} ${artwork.dimensions.unit}`;
+    const mediumText = artwork.mediumDescription || MEDIUM_LABELS[artwork.medium];
     pdf.setFontSize(9);
-    pdf.text(`${MEDIUM_LABELS[artwork.medium]} • ${dimensionStr}`, pageWidth / 2, y, { align: 'center' });
+    pdf.text(`${mediumText} • ${dimensionStr}`, pageWidth / 2, y, { align: 'center' });
     y += 12;
 
     // ===== Divider =====

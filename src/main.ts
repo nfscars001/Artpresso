@@ -191,6 +191,17 @@ function renderCalculatorView(): string {
                   <label for="artistName">Artist Name</label>
                   <input type="text" id="artistName" placeholder="Enter artist name" required>
                 </div>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="year">Year</label>
+                    <input type="number" id="year" min="1800" max="2100" placeholder="e.g. 2024">
+                  </div>
+                  <div class="form-group">
+                    <label for="mediumDescription">Medium</label>
+                    <input type="text" id="mediumDescription" placeholder="e.g. Oil on canvas">
+                  </div>
+                </div>
               </div>
 
               <!-- Dimensions -->
@@ -452,6 +463,10 @@ function getFormData(): ArtworkDetails | null {
 
   const title = titleInput.value.trim();
   const artistName = artistInput.value.trim();
+  const yearInput = document.getElementById('year') as HTMLInputElement;
+  const year = yearInput?.value ? parseInt(yearInput.value) : undefined;
+  const mediumDescInput = document.getElementById('mediumDescription') as HTMLInputElement;
+  const mediumDescription = mediumDescInput?.value.trim() || undefined;
   const width = parseFloat(widthInput.value);
   const height = parseFloat(heightInput.value);
   const depth = parseFloat((document.getElementById('depth') as HTMLInputElement).value) || undefined;
@@ -470,6 +485,8 @@ function getFormData(): ArtworkDetails | null {
   return {
     title,
     artistName,
+    year,
+    mediumDescription,
     dimensions: { width, height, depth, unit },
     careerStage,
     education,
@@ -518,9 +535,9 @@ function renderQuote(calc: PriceCalculation, artwork: ArtworkDetails) {
     ` : ''}
 
     <div class="quote-artwork-info">
-      <h3 class="artwork-title">"${artwork.title}"</h3>
+      <h3 class="artwork-title">"${artwork.title}"${artwork.year ? `, ${artwork.year}` : ''}</h3>
       <p class="artwork-artist">by ${artwork.artistName}</p>
-      <p class="artwork-details">${MEDIUM_LABELS[artwork.medium]} • ${dimensionStr}</p>
+      <p class="artwork-details">${artwork.mediumDescription || MEDIUM_LABELS[artwork.medium]} • ${dimensionStr}</p>
     </div>
 
     <div class="divider"></div>

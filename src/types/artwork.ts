@@ -41,6 +41,8 @@ export interface ArtworkDimensions {
 export interface ArtworkDetails {
     title: string;
     artistName: string;
+    year?: number;
+    mediumDescription?: string;
     dimensions: ArtworkDimensions;
     careerStage: CareerStage;
     education: Education;
