@@ -1,5 +1,6 @@
 import './styles/global.css';
 import './styles/app.css';
+import './styles/landing.css';
 import {
   type ArtworkDetails,
   type Currency,
@@ -18,6 +19,8 @@ import {
 import { generatePDF } from './utils/pdfExport';
 
 // ===== State =====
+type View = 'landing' | 'calculator';
+let currentView: View = 'landing';
 let currentCurrency: Currency = 'USD';
 let exchangeRate = 1.36;
 let exchangeRateDate = '';
@@ -44,7 +47,7 @@ function renderApp() {
       <header class="header">
         <div class="container">
           <div class="header-content">
-            <div class="logo">
+            <div class="logo cursor-pointer" id="navLogo">
               <span class="logo-icon">☕</span>
               <span class="logo-text">Artpresso</span>
             </div>
@@ -54,165 +57,9 @@ function renderApp() {
       </header>
 
       <main class="main">
-        <div class="container">
-          <div class="layout">
-            <!-- Left Column: Form -->
-            <div class="form-column">
-              <div class="card">
-                <h2 class="card-title">Artwork Details</h2>
-                
-                <form id="artworkForm">
-                  <!-- Basic Info -->
-                  <div class="form-section">
-                    <h3 class="section-title">Basic Information</h3>
-                    
-                    <div class="form-group">
-                      <label for="title">Artwork Title</label>
-                      <input type="text" id="title" placeholder="Enter artwork title" required>
-                    </div>
-                    
-                    <div class="form-group">
-                      <label for="artistName">Artist Name</label>
-                      <input type="text" id="artistName" placeholder="Enter artist name" required>
-                    </div>
-                  </div>
-
-                  <!-- Dimensions -->
-                  <div class="form-section">
-                    <h3 class="section-title">Dimensions</h3>
-                    
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label for="width">Width</label>
-                        <input type="number" id="width" min="0.1" step="0.1" placeholder="Width" required>
-                      </div>
-                      <div class="form-group">
-                        <label for="height">Height</label>
-                        <input type="number" id="height" min="0.1" step="0.1" placeholder="Height" required>
-                      </div>
-                    </div>
-                    
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label for="depth">Depth (optional, for 3D)</label>
-                        <input type="number" id="depth" min="0" step="0.1" placeholder="Depth">
-                      </div>
-                      <div class="form-group">
-                        <label for="unit">Unit</label>
-                        <select id="unit">
-                          <option value="inches">Inches</option>
-                          <option value="cm">Centimeters</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Artist Profile -->
-                  <div class="form-section">
-                    <h3 class="section-title">Artist Profile</h3>
-                    
-                    <div class="form-group">
-                      <label for="careerStage">Career Stage</label>
-                      <select id="careerStage" required>
-                        ${Object.entries(CAREER_STAGE_LABELS).map(([value, label]) =>
-    `<option value="${value}">${label}</option>`
-  ).join('')}
-                      </select>
-                    </div>
-                    
-                    <div class="form-group">
-                      <label for="education">Education / Experience</label>
-                      <select id="education" required>
-                        ${Object.entries(EDUCATION_LABELS).map(([value, label]) =>
-    `<option value="${value}">${label}</option>`
-  ).join('')}
-                      </select>
-                    </div>
-                    
-                    <div class="form-group">
-                      <label for="salesRange">Annual Sales</label>
-                      <select id="salesRange" required>
-                        ${Object.entries(SALES_RANGE_LABELS).map(([value, label]) =>
-    `<option value="${value}">${label}</option>`
-  ).join('')}
-                      </select>
-                    </div>
-                  </div>
-
-                  <!-- Artwork Details -->
-                  <div class="form-section">
-                    <h3 class="section-title">Artwork Specifics</h3>
-                    
-                    <div class="form-group">
-                      <label for="medium">Medium</label>
-                      <select id="medium" required>
-                        ${Object.entries(MEDIUM_LABELS).map(([value, label]) =>
-    `<option value="${value}">${label}</option>`
-  ).join('')}
-                      </select>
-                    </div>
-                    
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label for="materialCost">Material Cost ($)</label>
-                        <input type="number" id="materialCost" min="0" step="1" placeholder="0" value="0">
-                      </div>
-                      <div class="form-group">
-                        <label for="framingCost">Framing Cost ($)</label>
-                        <input type="number" id="framingCost" min="0" step="1" placeholder="0" value="0">
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Image Upload -->
-                  <div class="form-section">
-                    <h3 class="section-title">Artwork Image (Optional)</h3>
-                    
-                    <div class="image-upload" id="imageUpload">
-                      <input type="file" id="artworkImage" accept="image/*" class="sr-only">
-                      <label for="artworkImage" class="upload-label">
-                        <span class="upload-icon">🖼️</span>
-                        <span class="upload-text">Click to upload image</span>
-                        <span class="upload-hint">PNG, JPG up to 5MB</span>
-                      </label>
-                      <div class="image-preview" id="imagePreview"></div>
-                    </div>
-                  </div>
-
-                  <!-- Currency & Calculate -->
-                  <div class="form-section">
-                    <div class="currency-toggle">
-                      <label class="currency-label">Currency:</label>
-                      <div class="toggle-buttons">
-                        <button type="button" class="toggle-btn active" data-currency="USD">USD</button>
-                        <button type="button" class="toggle-btn" data-currency="CAD">CAD</button>
-                      </div>
-                      <span class="exchange-rate" id="exchangeRate"></span>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary btn-lg btn-full" id="calculateBtn">
-                      <span>Calculate Price</span>
-                      <span class="btn-icon">→</span>
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-
-            <!-- Right Column: Quote Preview -->
-            <div class="quote-column">
-              <div class="card quote-card" id="quoteCard">
-                <div class="quote-placeholder" id="quotePlaceholder">
-                  <span class="placeholder-icon">📊</span>
-                  <p>Fill in the artwork details and click<br><strong>"Calculate Price"</strong> to see your quote</p>
-                </div>
-                
-                <div class="quote-content hidden" id="quoteContent">
-                  <!-- Will be populated dynamically -->
-                </div>
-              </div>
-            </div>
-          </div>
+        <div id="viewContainer">
+          ${renderLandingView()}
+          ${renderCalculatorView()}
         </div>
       </main>
 
@@ -223,22 +70,326 @@ function renderApp() {
       </footer>
     </div>
   `;
+
+  updateViewVisibility();
+}
+
+function renderLandingView(): string {
+  return `
+    <div id="landingView" class="landing-view ${currentView === 'landing' ? '' : 'hidden'}">
+      <div class="bg-grid"></div>
+      <div class="bg-aura"></div>
+      
+      <!-- Hero Section -->
+      <section class="hero-section">
+        <div class="container">
+          <div class="hero-content">
+            <h1 class="hero-title animate-slide-up" data-delay="1">PROFESSIONAL ART PRICING, SIMPLIFIED.</h1>
+            <p class="hero-subtitle animate-slide-up" data-delay="2">
+              Created by artists, for artists — drawing from real-world experiences, industry standards, and your own unique creative journey.
+            </p>
+            <div class="hero-actions animate-slide-up" data-delay="3">
+              <button class="btn btn-primary btn-lg" id="letsBrewBtn">
+                <span>Let's brew</span>
+                <span class="btn-icon">→</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- About Section -->
+      <section class="about-section" id="about">
+        <div class="container">
+          <div class="about-grid">
+            <div class="about-image">
+              <img src="/about-profile.jpg" alt="Jacky Ho - Creator of Artpresso">
+            </div>
+            <div class="about-content">
+              <h2 class="section-title">For artists, by artists</h2>
+              <h3 class="about-header">Artpresso - Art + Espresso, and it sounds like "Appraisal". Yes, that's how this Asian dude came up with the name.</h3>
+              <p>Jacky Ho created Artpresso in his living room, amidst the clinking of coffee mugs and the scent of oil paint. As artists, he realized that the most challenging part of our journey wasn't always the creation itself, but valuing it.</p>
+              <p>Good thing he has an engineering background, he built this tool to bridge the gap between creative passion and professional reality. Combining industry data, educational background, and market traction, Artpresso brews a price that you can stand behind with confidence.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ Section -->
+      <section class="faq-section" id="faq">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-label">Common Questions</span>
+            <h2>FAQ</h2>
+          </div>
+          <div class="faq-grid">
+            <div class="faq-item">
+              <p class="faq-question">Is Artpresso free to use?</p>
+              <p class="faq-answer">Yes, for now the functions are free for all. We will have more advanced features with a paid plan, coming in 2026 Q2, stay tuned.</p>
+            </div>
+            <div class="faq-item">
+              <p class="faq-question">Can I use the app for pricing prints or just original art?</p>
+              <p class="faq-answer">Yes, we have covered you :)</p>
+            </div>
+            <div class="faq-item">
+              <p class="faq-question">Can I export my price quote?</p>
+              <p class="faq-answer">Yes—export options are available in PDF format with letter size for you to print or attach to your email.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact Section -->
+      <section class="contact-section" id="contact">
+        <div class="container">
+          <div class="card contact-card">
+            <div class="section-header">
+              <span class="section-label">Reach Out</span>
+              <h2>Contact Us</h2>
+            </div>
+            <p>Still have questions? We'd love to hear from you.</p>
+            <div class="contact-info">
+              <a href="mailto:hello@artpresso.com" class="contact-link">
+                <span class="contact-icon">✉️</span>
+                <span>hello@artpresso.com</span>
+              </a>
+              <div class="contact-link">
+                <span class="contact-icon">📍</span>
+                <span>Digital Studio</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
+function renderCalculatorView(): string {
+  return `
+    <div id="calculatorView" class="container ${currentView === 'calculator' ? '' : 'hidden'}">
+      <div class="bg-grid"></div>
+      <div class="bg-aura"></div>
+      <div class="layout">
+        <!-- Left Column: Form -->
+        <div class="form-column">
+          <div class="card">
+            <div class="flex-between mb-6">
+              <h2 class="card-title mb-0">Artwork Details</h2>
+              <button class="btn btn-secondary btn-sm" id="backToLanding">← Back</button>
+            </div>
+            
+            <form id="artworkForm">
+              <!-- Basic Info -->
+              <div class="form-section">
+                <h3 class="section-title">Basic Information</h3>
+                
+                <div class="form-group">
+                  <label for="title">Artwork Title</label>
+                  <input type="text" id="title" placeholder="Enter artwork title" required>
+                </div>
+                
+                <div class="form-group">
+                  <label for="artistName">Artist Name</label>
+                  <input type="text" id="artistName" placeholder="Enter artist name" required>
+                </div>
+              </div>
+
+              <!-- Dimensions -->
+              <div class="form-section">
+                <h3 class="section-title">Dimensions</h3>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="width">Width</label>
+                    <input type="number" id="width" min="0.1" step="0.1" placeholder="Width" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="height">Height</label>
+                    <input type="number" id="height" min="0.1" step="0.1" placeholder="Height" required>
+                  </div>
+                </div>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="depth">Depth (optional, for 3D)</label>
+                    <input type="number" id="depth" min="0" step="0.1" placeholder="Depth">
+                  </div>
+                  <div class="form-group">
+                    <label for="unit">Unit</label>
+                    <select id="unit">
+                      <option value="inches">Inches</option>
+                      <option value="cm">Centimeters</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Artist Profile -->
+              <div class="form-section">
+                <h3 class="section-title">Artist Profile</h3>
+                
+                <div class="form-group">
+                  <label for="careerStage">Career Stage</label>
+                  <select id="careerStage" required>
+                    ${Object.entries(CAREER_STAGE_LABELS).map(([value, label]) =>
+    `<option value="${value}">${label}</option>`
+  ).join('')}
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="education">Education / Experience</label>
+                  <select id="education" required>
+                    ${Object.entries(EDUCATION_LABELS).map(([value, label]) =>
+    `<option value="${value}">${label}</option>`
+  ).join('')}
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="salesRange">Annual Sales</label>
+                  <select id="salesRange" required>
+                    ${Object.entries(SALES_RANGE_LABELS).map(([value, label]) =>
+    `<option value="${value}">${label}</option>`
+  ).join('')}
+                  </select>
+                </div>
+              </div>
+
+              <!-- Artwork Details -->
+              <div class="form-section">
+                <h3 class="section-title">Artwork Specifics</h3>
+                
+                <div class="form-group">
+                  <label for="medium">Medium</label>
+                  <select id="medium" required>
+                    ${Object.entries(MEDIUM_LABELS).map(([value, label]) =>
+    `<option value="${value}">${label}</option>`
+  ).join('')}
+                  </select>
+                </div>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="materialCost">Material Cost ($)</label>
+                    <input type="number" id="materialCost" min="0" step="1" placeholder="0" value="0">
+                  </div>
+                  <div class="form-group">
+                    <label for="framingCost">Framing Cost ($)</label>
+                    <input type="number" id="framingCost" min="0" step="1" placeholder="0" value="0">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Image Upload -->
+              <div class="form-section">
+                <h3 class="section-title">Artwork Image (Optional)</h3>
+                
+                <div class="image-upload" id="imageUpload">
+                  <input type="file" id="artworkImage" accept="image/*" class="sr-only">
+                  <label for="artworkImage" class="upload-label">
+                    <span class="upload-icon">🖼️</span>
+                    <span class="upload-text">Click to upload image</span>
+                    <span class="upload-hint">PNG, JPG up to 5MB</span>
+                  </label>
+                  <div class="image-preview" id="imagePreview"></div>
+                </div>
+              </div>
+
+              <!-- Currency & Calculate -->
+              <div class="form-section">
+                <div class="currency-toggle">
+                  <label class="currency-label">Currency:</label>
+                  <div class="toggle-buttons">
+                    <button type="button" class="toggle-btn active" data-currency="USD">USD</button>
+                    <button type="button" class="toggle-btn" data-currency="CAD">CAD</button>
+                  </div>
+                  <span class="exchange-rate" id="exchangeRate"></span>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-lg btn-full" id="calculateBtn">
+                  <span>Calculate Price</span>
+                  <span class="btn-icon">→</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right Column: Quote Preview -->
+        <div class="quote-column">
+          <div class="card quote-card" id="quoteCard">
+            <div class="quote-placeholder" id="quotePlaceholder">
+              <span class="placeholder-icon">📊</span>
+              <p>Fill in the artwork details and click<br><strong>"Calculate Price"</strong> to see your quote</p>
+            </div>
+            
+            <div class="quote-content hidden" id="quoteContent">
+              <!-- Will be populated dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function updateViewVisibility() {
+  const landing = document.getElementById('landingView');
+  const calculator = document.getElementById('calculatorView');
+
+  if (currentView === 'landing') {
+    landing?.classList.remove('hidden');
+    calculator?.classList.add('hidden');
+    window.scrollTo(0, 0);
+  } else {
+    landing?.classList.add('hidden');
+    calculator?.classList.remove('hidden');
+    window.scrollTo(0, 0);
+    setupCalculatorListeners();
+  }
 }
 
 function setupEventListeners() {
-  // Form submission
-  const form = document.getElementById('artworkForm') as HTMLFormElement;
-  form.addEventListener('submit', handleCalculate);
+  // Navigation
+  document.getElementById('navLogo')?.addEventListener('click', () => {
+    currentView = 'landing';
+    updateViewVisibility();
+  });
 
-  // Currency toggle
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    if (target.id === 'letsBrewBtn' || target.closest('#letsBrewBtn')) {
+      currentView = 'calculator';
+      updateViewVisibility();
+    }
+
+    if (target.id === 'backToLanding' || target.closest('#backToLanding')) {
+      currentView = 'landing';
+      updateViewVisibility();
+    }
+  });
+
+  if (currentView === 'calculator') {
+    setupCalculatorListeners();
+  }
+}
+
+function setupCalculatorListeners() {
+  const form = document.getElementById('artworkForm') as HTMLFormElement;
+  if (form) {
+    form.removeEventListener('submit', handleCalculate);
+    form.addEventListener('submit', handleCalculate);
+  }
+
   const toggleButtons = document.querySelectorAll('.toggle-btn');
   toggleButtons.forEach(btn => {
     btn.addEventListener('click', () => handleCurrencyChange(btn as HTMLElement));
   });
 
-  // Image upload
   const imageInput = document.getElementById('artworkImage') as HTMLInputElement;
-  imageInput.addEventListener('change', handleImageUpload);
+  imageInput?.addEventListener('change', handleImageUpload);
 }
 
 function handleCurrencyChange(btn: HTMLElement) {
@@ -294,10 +445,17 @@ function handleImageUpload(e: Event) {
 }
 
 function getFormData(): ArtworkDetails | null {
-  const title = (document.getElementById('title') as HTMLInputElement).value.trim();
-  const artistName = (document.getElementById('artistName') as HTMLInputElement).value.trim();
-  const width = parseFloat((document.getElementById('width') as HTMLInputElement).value);
-  const height = parseFloat((document.getElementById('height') as HTMLInputElement).value);
+  const titleInput = document.getElementById('title') as HTMLInputElement;
+  const artistInput = document.getElementById('artistName') as HTMLInputElement;
+  const widthInput = document.getElementById('width') as HTMLInputElement;
+  const heightInput = document.getElementById('height') as HTMLInputElement;
+
+  if (!titleInput || !artistInput || !widthInput || !heightInput) return null;
+
+  const title = titleInput.value.trim();
+  const artistName = artistInput.value.trim();
+  const width = parseFloat(widthInput.value);
+  const height = parseFloat(heightInput.value);
   const depth = parseFloat((document.getElementById('depth') as HTMLInputElement).value) || undefined;
   const unit = (document.getElementById('unit') as HTMLSelectElement).value as 'inches' | 'cm';
   const careerStage = (document.getElementById('careerStage') as HTMLSelectElement).value as ArtworkDetails['careerStage'];
@@ -454,14 +612,16 @@ function renderQuote(calc: PriceCalculation, artwork: ArtworkDetails) {
   `;
 
   // Add event listeners
-  document.getElementById('detailsToggle')!.addEventListener('click', () => {
-    const detailsContent = document.getElementById('detailsContent')!;
-    const arrow = document.querySelector('.toggle-arrow')!;
-    detailsContent.classList.toggle('hidden');
-    arrow.textContent = detailsContent.classList.contains('hidden') ? '▼' : '▲';
+  document.getElementById('detailsToggle')?.addEventListener('click', () => {
+    const detailsContent = document.getElementById('detailsContent');
+    const arrow = document.querySelector('.toggle-arrow');
+    if (detailsContent && arrow) {
+      detailsContent.classList.toggle('hidden');
+      arrow.textContent = detailsContent.classList.contains('hidden') ? '▼' : '▲';
+    }
   });
 
-  document.getElementById('exportPdfBtn')!.addEventListener('click', () => {
+  document.getElementById('exportPdfBtn')?.addEventListener('click', () => {
     generatePDF(artwork, calc);
   });
 

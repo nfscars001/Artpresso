@@ -21,8 +21,9 @@ body {
     font-weight: var(--font-regular);
     line-height: var(--leading-normal);
     color: var(--color-neutral-100);
-    background: linear-gradient(135deg, var(--color-neutral-950) 0%, var(--color-neutral-900) 50%, #1a1510 100%);
+    background-color: var(--color-neutral-950);
     min-height: 100vh;
+    margin: 0;
 }
 
 /* ===== Typography ===== */
