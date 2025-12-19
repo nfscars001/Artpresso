@@ -48,7 +48,9 @@ function renderApp() {
         <div class="container">
           <div class="header-content">
             <div class="logo cursor-pointer" id="navLogo">
-              <span class="logo-icon">☕</span>
+              <div class="logo-icon">
+                <img src="/favicon.svg" alt="Artpresso Logo">
+              </div>
               <span class="logo-text">Artpresso</span>
             </div>
             <p class="tagline">Brew a price. Serve it confidently.</p>
@@ -142,20 +144,16 @@ function renderLandingView(): string {
       <!-- Contact Section -->
       <section class="contact-section" id="contact">
         <div class="container">
-          <div class="card contact-card">
-            <div class="section-header">
-              <span class="section-label">Reach Out</span>
-              <h2>Contact Us</h2>
-            </div>
-            <p>Still have questions? We'd love to hear from you.</p>
+          <div class="contact-card card animate-slide-up">
+            <p>Ready to brew your next price?</p>
             <div class="contact-info">
-              <a href="mailto:hello@artpresso.com" class="contact-link">
+              <a href="mailto:info@westside-union.com" class="contact-link">
                 <span class="contact-icon">✉️</span>
-                <span>hello@artpresso.com</span>
+                <span>info@westside-union.com</span>
               </a>
               <div class="contact-link">
                 <span class="contact-icon">📍</span>
-                <span>Digital Studio</span>
+                <span>Toronto, Canada</span>
               </div>
             </div>
           </div>
