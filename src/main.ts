@@ -32,6 +32,7 @@ async function init() {
   renderApp();
   setupEventListeners();
   injectBMCButton();
+  injectTypeform();
 
   // Fetch exchange rate
   const rateData = await fetchExchangeRate();
@@ -149,11 +150,14 @@ function renderLandingView(): string {
       <section class="contact-section" id="contact">
         <div class="container">
           <div class="contact-card card animate-slide-up">
-            <p>Ready to brew your next price?</p>
+            <p>We would like to hear some feedback :)</p>
+            <div class="typeform-container">
+              <div data-tf-live="01KD1JQA5A6P9CWSBBCTTVQGQE"></div>
+            </div>
             <div class="contact-info">
-              <a href="mailto:info@westside-union.com" class="contact-link">
+              <a href="mailto:artpresso@westside-union.com" class="contact-link">
                 <span class="contact-icon">✉️</span>
-                <span>info@westside-union.com</span>
+                <span>artpresso@westside-union.com</span>
               </a>
               <div class="contact-link">
                 <span class="contact-icon">📍</span>
@@ -676,6 +680,13 @@ function injectBMCButton() {
 
   link.appendChild(img);
   container.appendChild(link);
+}
+
+function injectTypeform() {
+  const script = document.createElement('script');
+  script.src = '//embed.typeform.com/next/embed.js';
+  script.async = true;
+  document.body.appendChild(script);
 }
 
 // Start app

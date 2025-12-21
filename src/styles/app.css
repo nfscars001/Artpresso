@@ -478,6 +478,34 @@
     margin-top: var(--space-4);
 }
 
+/* ===== Typeform ===== */
+.typeform-container {
+    margin: var(--space-6) calc(var(--space-12) * -1);
+    width: calc(100% + (var(--space-12) * 2));
+    height: 450px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.1);
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.typeform-container [data-tf-live],
+.typeform-container [data-tf-live] iframe,
+.typeform-container [data-tf-live] [data-tf-widget] {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+}
+
+@media (max-width: 640px) {
+    .typeform-container {
+        margin: var(--space-4) calc(var(--space-12) * -1);
+        width: calc(100% + (var(--space-12) * 2));
+        height: 550px;
+    }
+}
+
 /* ===== Footer ===== */
 .footer {
     padding: var(--space-6) 0;
