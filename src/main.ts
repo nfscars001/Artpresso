@@ -31,6 +31,7 @@ let artworkImageDataUrl: string | null = null;
 async function init() {
   renderApp();
   setupEventListeners();
+  injectBMCButton();
 
   // Fetch exchange rate
   const rateData = await fetchExchangeRate();
@@ -53,7 +54,10 @@ function renderApp() {
               </div>
               <span class="logo-text">Artpresso</span>
             </div>
-            <p class="tagline">Brew a price. Serve it confidently.</p>
+            <div class="header-right">
+              <p class="tagline">Brew a price. Serve it confidently.</p>
+              <div id="bmc-container"></div>
+            </div>
           </div>
         </div>
       </header>
@@ -653,6 +657,25 @@ function updateExchangeRateDisplay() {
       ? `(1 USD = ${exchangeRate.toFixed(2)} CAD, fallback rate)`
       : `(1 USD = ${exchangeRate.toFixed(2)} CAD)`;
   }
+}
+
+function injectBMCButton() {
+  const container = document.getElementById('bmc-container');
+  if (!container) return;
+
+  const link = document.createElement('a');
+  link.href = 'https://www.buymeacoffee.com/nfscars001r';
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+
+  const img = document.createElement('img');
+  img.src = 'https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=nfscars001r&button_colour=aa7942&font_colour=ffffff&font_family=Cookie&outline_colour=ffffff&coffee_colour=FFDD00';
+  img.alt = 'Buy me a coffee';
+  img.style.height = '32px';
+  img.style.width = 'auto';
+
+  link.appendChild(img);
+  container.appendChild(link);
 }
 
 // Start app
